@@ -71,6 +71,7 @@ namespace ArtifactsAPI
                 var endpoint = $"{_path}/move";
                 var body = new { x, y };
 
+                //  TODO Check for status 490 (character already at destination)
                 return await _apiHandler.handle_request(endpoint, HttpMethod.Post, body: body);
             }
         }
