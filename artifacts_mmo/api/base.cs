@@ -2,42 +2,77 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Mime;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
 
-class ArtifactsAPI
+namespace ArtifactsAPI
 {
-    private const string url = "https://api.artifactsmmo.com/";
-    private readonly string character_name;
-    private Dictionary<string, string> headers;
-
-    private HttpClient client;
-
-    public ArtifactsAPI(string api_key, string character_name)
+    class APIHandler
     {
-        this.character_name = "my/" + character_name;
+        private const string base_url = "https://api.artifactsmmo.com";
+        private HttpClient _client;
 
-        this.headers = new Dictionary<string, string>()
+        public ActionEndpoints Actions => new ActionEndpoints(this);
+
+        public APIHandler(string api_key, string character_name)
         {
-            { "Accept", "application/json" },
-            { "Content-Type", "application/json" },
-            { "Authorization", api_key },
-        };
+            _client = new HttpClient { BaseAddress = new Uri($"{base_url}/my/{character_name}/") };
 
-        this.client = new HttpClient();
-        client.BaseAddress = new Uri(ArtifactsAPI.url);
-    }
+            _client.DefaultRequestHeaders.Add("Accept", "application/json");
+            _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {api_key}");
+            // _client.DefaultRequestHeaders.Add("Content-Type", "application/json");
+        }
 
-    public void request_handler(string endpoint, string method, Dictionary<string, string> body)
-    {
-        string full_endpoint = url + character_name + "/" + endpoint;
-    }
-}
+        private async Task<HttpResponseMessage> handle_request(
+            string endpoint,
+            HttpMethod method,
+            Dictionary<string, string>? urlParams = null,
+            object? body = null
+        )
+        {
+            var url = endpoint;
 
-class Action
-{
-    public const string url_path = "action/";
+            if (urlParams != null)
+            {
+                var queryString = string.Join(
+                    "&",
+                    urlParams.Select(kvp =>
+                        $"{Uri.EscapeDataString(kvp.Key)}={Uri.EscapeDataString(kvp.Value)}"
+                    )
+                );
+                url += "?" + queryString;
+            }
 
-    public void move(int x, int y)
-    {
-        string endpoint = "move/";
+            var request = new HttpRequestMessage(method, url);
+
+            if (body != null)
+            {
+                var jsonBody = JsonSerializer.Serialize(body);
+                request.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+            }
+
+            return await _client.SendAsync(request);
+        }
+
+        public class ActionEndpoints
+        {
+            private readonly APIHandler _apiHandler;
+            private const string _path = "action";
+
+            public ActionEndpoints(APIHandler apiHandler)
+            {
+                _apiHandler = apiHandler;
+            }
+
+            public async Task<HttpResponseMessage> move(int x, int y)
+            {
+                var endpoint = $"{_path}/move";
+                var body = new { x, y };
+
+                return await _apiHandler.handle_request(endpoint, HttpMethod.Post, body: body);
+            }
+        }
     }
 }
