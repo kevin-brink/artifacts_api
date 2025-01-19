@@ -162,4 +162,15 @@ namespace ArtifactsAPI.Schemas
         public string message = (string)json["message"]!;
         public DateTime created_at = (DateTime)json["created_at"]!;
     }
+
+    public class Log(JToken json)
+    {
+        public string character = (string)json["character"]!;
+        public string account = (string)json["account"]!;
+        public string type = (string)json["type"]!;
+        public string description = (string)json["description"]!;
+        public int cooldown = (int)json["cooldown"]!;
+        public DateTime cooldown_expiration = (DateTime)json["cooldown_expiration"]!;
+        public DateTime created_at = (DateTime)json["created_at"]!;
+    }
 }
