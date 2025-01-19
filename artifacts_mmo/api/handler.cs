@@ -15,14 +15,15 @@ namespace ArtifactsAPI
         private HttpClient _client;
 
         public ActionEndpoints Actions => new ActionEndpoints(this);
+        public string character_name;
 
-        public APIHandler(string api_key, string character_name)
+        public APIHandler(string api_key, string character_name = "")
         {
-            _client = new HttpClient { BaseAddress = new Uri($"{base_url}/my/{character_name}/") };
+            _client = new HttpClient { BaseAddress = new Uri($"{base_url}/") };
+            this.character_name = character_name;
 
             _client.DefaultRequestHeaders.Add("Accept", "application/json");
             _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {api_key}");
-            // _client.DefaultRequestHeaders.Add("Content-Type", "application/json");
         }
 
         private async Task<HttpResponseMessage> handle_request(
