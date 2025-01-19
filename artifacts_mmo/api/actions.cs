@@ -7,7 +7,7 @@ namespace ArtifactsAPI
         public class ActionEndpoints
         {
             private readonly APIHandler _apiHandler;
-            private string _path => $"/my/{_apiHandler.character_name}/action";
+            private string _path => $"my/{_apiHandler.character_name}/action";
 
             public ActionEndpoints(APIHandler apiHandler)
             {
