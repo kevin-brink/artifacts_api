@@ -16,12 +16,12 @@ namespace ArtifactsAPI.Models
             status_code = (StatusCode)response.StatusCode;
             this.response = response;
 
-            if (status_code == StatusCode.OK)
-            {
-                cooldown = new Cooldown(json["cooldown"]!);
-                destination = new Map(json["map"]!);
-                character = new Character(json["character"]!);
-            }
+            if (status_code != StatusCode.OK)
+                return;
+
+            cooldown = new Cooldown(json["cooldown"]!);
+            destination = new Map(json["map"]!);
+            character = new Character(json["character"]!);
         }
     }
 
@@ -38,12 +38,12 @@ namespace ArtifactsAPI.Models
             status_code = (StatusCode)response.StatusCode;
             this.response = response;
 
-            if (status_code == StatusCode.OK)
-            {
-                cooldown = new Cooldown(json["cooldown"]!);
-                hp_restored = (int)json["hp_restored"]!;
-                character = new Character(json["character"]!);
-            }
+            if (status_code != StatusCode.OK)
+                return;
+
+            cooldown = new Cooldown(json["cooldown"]!);
+            hp_restored = (int)json["hp_restored"]!;
+            character = new Character(json["character"]!);
         }
     }
 
@@ -60,12 +60,34 @@ namespace ArtifactsAPI.Models
             status_code = (StatusCode)response.StatusCode;
             this.response = response;
 
-            if (status_code == StatusCode.OK)
-            {
-                cooldown = new Cooldown(json["cooldown"]!);
-                fight = new Fight(json["fight"]!);
-                character = new Character(json["character"]!);
-            }
+            if (status_code != StatusCode.OK)
+                return;
+
+            cooldown = new Cooldown(json["cooldown"]!);
+            fight = new Fight(json["fight"]!);
+            character = new Character(json["character"]!);
+        }
+    }
+
+    public class GatherResponse : BaseResponse
+    {
+        public SkillInfo? details { get; private set; }
+        public Character? character { get; private set; }
+
+        public GatherResponse(HttpResponseMessage response)
+        {
+            var content = response.Content.ReadAsStringAsync().Result;
+            var json = JObject.Parse(content)["data"]!;
+
+            status_code = (StatusCode)response.StatusCode;
+            this.response = response;
+
+            if (status_code != StatusCode.OK)
+                return;
+
+            cooldown = new Cooldown(json["cooldown"]!);
+            details = new SkillInfo(json["details"]!);
+            character = new Character(json["character"]!);
         }
     }
 }
