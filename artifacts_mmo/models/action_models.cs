@@ -11,7 +11,7 @@ namespace ArtifactsAPI.Models
         public MoveResponse(HttpResponseMessage response)
         {
             var content = response.Content.ReadAsStringAsync().Result;
-            var json = JObject.Parse(content)["data"];
+            var json = JObject.Parse(content)["data"]!;
 
             status_code = (StatusCode)response.StatusCode;
             this.response = response;
@@ -33,7 +33,7 @@ namespace ArtifactsAPI.Models
         public RestResponse(HttpResponseMessage response)
         {
             var content = response.Content.ReadAsStringAsync().Result;
-            var json = JObject.Parse(content)["data"];
+            var json = JObject.Parse(content)["data"]!;
 
             status_code = (StatusCode)response.StatusCode;
             this.response = response;
@@ -55,7 +55,7 @@ namespace ArtifactsAPI.Models
         public FightResponse(HttpResponseMessage response)
         {
             var content = response.Content.ReadAsStringAsync().Result;
-            var json = JObject.Parse(content)["data"];
+            var json = JObject.Parse(content)["data"]!;
 
             status_code = (StatusCode)response.StatusCode;
             this.response = response;
