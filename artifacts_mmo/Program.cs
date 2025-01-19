@@ -12,9 +12,11 @@ string api_key =
 APIHandler api = new APIHandler(api_key, name);
 
 var client = new Client(api, name);
+await api.Actions.Move(0, 1);
+await client.GrindCombat(10);
 
-_ = await api.Actions.Move(0, 0);
-var move = await api.Actions.Move(-1, 0);
-var gather = await api.Actions.Gathering();
+// _ = await api.Actions.Move(0, 0);
+// var move = await api.Actions.Move(-1, 0);
+// var gather = await api.Actions.Gathering();
 
 return 0;
