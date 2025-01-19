@@ -17,7 +17,8 @@ namespace ArtifactsAPI.Schemas
         public string skin = (string)json["skin"]!;
         public int x = (int)json["x"]!;
         public int y = (int)json["y"]!;
-        public MapContent content = new MapContent(json["content"]!);
+        public MapContent? content =
+            json["content"] != null ? new MapContent(json["content"]!) : null;
     }
 
     public class MapContent(JToken json)

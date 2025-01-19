@@ -2,7 +2,7 @@ using ArtifactsAPI.Models;
 
 namespace ArtifactsAPI
 {
-    partial class APIHandler
+    public partial class APIHandler
     {
         public class ActionEndpoints
         {

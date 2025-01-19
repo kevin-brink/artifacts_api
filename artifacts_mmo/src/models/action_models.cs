@@ -20,7 +20,7 @@ namespace ArtifactsAPI.Models
                 return;
 
             cooldown = new Cooldown(json["cooldown"]!);
-            destination = new Map(json["map"]!);
+            destination = new Map(json["destination"]!);
             character = new Character(json["character"]!);
         }
     }

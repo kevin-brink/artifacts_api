@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace ArtifactsAPI
 {
-    partial class APIHandler
+    public partial class APIHandler
     {
         private const string base_url = "https://api.artifactsmmo.com";
         private HttpClient _client;
