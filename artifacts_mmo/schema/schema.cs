@@ -6,8 +6,8 @@ namespace ArtifactsAPI.Schemas
     {
         public int total_seconds = (int)json["total_seconds"]!;
         public int remaining_seconds = (int)json["remaining_seconds"]!;
-        public string started_at = (string)json["started_at"]!; // datetime
-        public string expiration = (string)json["expiration"]!; // datetime
+        public DateTime started_at = (DateTime)json["started_at"]!;
+        public DateTime expiration = (DateTime)json["expiration"]!;
         public string reason = (string)json["reason"]!;
     }
 
@@ -80,7 +80,7 @@ namespace ArtifactsAPI.Schemas
         public int x = (int)json["x"]!;
         public int y = (int)json["y"]!;
         public int cooldown = (int)json["cooldown"]!;
-        public string cooldown_expiration = (string)json["cooldown_expiration"]!;
+        public DateTime cooldown_expiration = (DateTime)json["cooldown_expiration"]!;
         public string weapon_slot = (string)json["weapon_slot"]!;
         public string shield_slot = (string)json["shield_slot"]!;
         public string helmet_slot = (string)json["helmet_slot"]!;
@@ -113,5 +113,32 @@ namespace ArtifactsAPI.Schemas
         public int slot = (int)json["slot"]!;
         public string code = (string)json["code"]!;
         public int quantity = (int)json["quantity"]!;
+    }
+
+    public class Fight(JToken json)
+    {
+        public int xp = (int)json["xp"]!;
+        public int gold = (int)json["gold"]!;
+        public List<Drop> drops = json["drops"]!.Select(item => new Drop(item)).ToList();
+        public int turns = (int)json["turns"]!;
+        public BlockedHits monster_blocked_hits = new BlockedHits(json["monster_blocked_hits"]!);
+        public BlockedHits player_blocked_hits = new BlockedHits(json["player_blocked_hits"]!);
+        public List<string> logs = json["logs"]!.Select(log => (string)log!).ToList();
+        public string result = (string)json["result"]!;
+    }
+
+    public class Drop(JToken json)
+    {
+        public string code = (string)json["code"]!;
+        public int quantity = (int)json["quantity"]!;
+    }
+
+    public class BlockedHits(JToken json)
+    {
+        public int fire = (int)json["fire"]!;
+        public int earth = (int)json["earth"]!;
+        public int water = (int)json["water"]!;
+        public int air = (int)json["air"]!;
+        public int total = (int)json["total"]!;
     }
 }
