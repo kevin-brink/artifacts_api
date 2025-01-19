@@ -141,4 +141,36 @@ namespace ArtifactsAPI.Schemas
         public int air = (int)json["air"]!;
         public int total = (int)json["total"]!;
     }
+
+    public class Status(JToken json)
+    {
+        public string status = (string)json["status"]!;
+        public string version = (string)json["version"]!;
+        public int max_level = (int)json["max_level"]!;
+        public int characters_online = (int)json["characters_online"]!;
+        public DateTime server_time = (DateTime)json["server_time"]!;
+        public List<Announcement> announcements =
+        [
+            .. json["announcements"]!.Select(item => new Announcement(item)),
+        ];
+        public string last_wipe = (string)json["last_wipe"]!;
+        public string next_wipe = (string)json["next_wipe"]!;
+    }
+
+    public class Announcement(JToken json)
+    {
+        public string message = (string)json["message"]!;
+        public DateTime created_at = (DateTime)json["created_at"]!;
+    }
+
+    public class Log(JToken json)
+    {
+        public string character = (string)json["character"]!;
+        public string account = (string)json["account"]!;
+        public string type = (string)json["type"]!;
+        public string description = (string)json["description"]!;
+        public int cooldown = (int)json["cooldown"]!;
+        public DateTime cooldown_expiration = (DateTime)json["cooldown_expiration"]!;
+        public DateTime created_at = (DateTime)json["created_at"]!;
+    }
 }

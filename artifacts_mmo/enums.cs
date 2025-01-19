@@ -3,7 +3,7 @@ namespace ArtifactsAPI
     public enum StatusCode
     {
         OK = 200,
-        MapNotFound = 404,
+        NotFound = 404,
         ActionInProgress = 486,
         AtDestination = 490,
         InventoryFull = 497,
