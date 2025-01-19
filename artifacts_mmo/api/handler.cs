@@ -14,7 +14,11 @@ namespace ArtifactsAPI
         private const string base_url = "https://api.artifactsmmo.com";
         private HttpClient _client;
 
+        // TODO Should endpoints each be dict grabbed by character names?
+        // ie api_hander.Actions["character_name"].Move(0, 1)
         public ActionEndpoints Actions => new ActionEndpoints(this);
+        public OtherEndpoints Other => new OtherEndpoints(this);
+
         public string character_name;
 
         public APIHandler(string api_key, string character_name = "")
