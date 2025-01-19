@@ -1,3 +1,5 @@
+using ArtifactsAPI.Models;
+
 namespace ArtifactsAPI
 {
     partial class APIHandler
@@ -12,7 +14,7 @@ namespace ArtifactsAPI
                 _apiHandler = apiHandler;
             }
 
-            public async Task<HttpResponseMessage> Move(int x, int y)
+            public async Task<MoveResponse> Move(int x, int y)
             {
                 var endpoint = $"{_path}/move";
                 var body = new { x, y };
@@ -23,7 +25,7 @@ namespace ArtifactsAPI
                     body: body
                 );
 
-                return response;
+                return new MoveResponse(response);
             }
         }
     }
