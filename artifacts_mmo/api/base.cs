@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ArtifactsAPI
 {
-    class APIHandler
+    partial class APIHandler
     {
         private const string base_url = "https://api.artifactsmmo.com";
         private HttpClient _client;
@@ -54,26 +54,6 @@ namespace ArtifactsAPI
             }
 
             return await _client.SendAsync(request);
-        }
-
-        public class ActionEndpoints
-        {
-            private readonly APIHandler _apiHandler;
-            private const string _path = "action";
-
-            public ActionEndpoints(APIHandler apiHandler)
-            {
-                _apiHandler = apiHandler;
-            }
-
-            public async Task<HttpResponseMessage> move(int x, int y)
-            {
-                var endpoint = $"{_path}/move";
-                var body = new { x, y };
-
-                //  TODO Check for status 490 (character already at destination)
-                return await _apiHandler.handle_request(endpoint, HttpMethod.Post, body: body);
-            }
         }
     }
 }
