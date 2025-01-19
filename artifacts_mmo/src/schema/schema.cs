@@ -17,7 +17,8 @@ namespace ArtifactsAPI.Schemas
         public string skin = (string)json["skin"]!;
         public int x = (int)json["x"]!;
         public int y = (int)json["y"]!;
-        public MapContent content = new MapContent(json["content"]!);
+        public MapContent? content =
+            json["content"] != null ? new MapContent(json["content"]!) : null;
     }
 
     public class MapContent(JToken json)
@@ -119,11 +120,11 @@ namespace ArtifactsAPI.Schemas
     {
         public int xp = (int)json["xp"]!;
         public int gold = (int)json["gold"]!;
-        public List<Drop> drops = json["drops"]!.Select(item => new Drop(item)).ToList();
+        public List<Drop> drops = [.. json["drops"]!.Select(item => new Drop(item))];
         public int turns = (int)json["turns"]!;
         public BlockedHits monster_blocked_hits = new BlockedHits(json["monster_blocked_hits"]!);
         public BlockedHits player_blocked_hits = new BlockedHits(json["player_blocked_hits"]!);
-        public List<string> logs = json["logs"]!.Select(log => (string)log!).ToList();
+        public List<string> logs = [.. json["logs"]!.Select(log => (string)log!)];
         public string result = (string)json["result"]!;
     }
 
@@ -172,5 +173,17 @@ namespace ArtifactsAPI.Schemas
         public int cooldown = (int)json["cooldown"]!;
         public DateTime cooldown_expiration = (DateTime)json["cooldown_expiration"]!;
         public DateTime created_at = (DateTime)json["created_at"]!;
+    }
+
+    public class SkillInfo(JToken json)
+    {
+        public int xp = (int)json["xp"]!;
+        public List<Item> items = [.. json["items"]!.Select(item => new Item(item))];
+    }
+
+    public class Item(JToken json)
+    {
+        public string code = (string)json["code"]!;
+        public int quantity = (int)json["quantity"]!;
     }
 }

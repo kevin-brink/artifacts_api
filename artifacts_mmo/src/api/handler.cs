@@ -1,15 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace ArtifactsAPI
 {
-    partial class APIHandler
+    public partial class APIHandler
     {
         private const string base_url = "https://api.artifactsmmo.com";
         private HttpClient _client;

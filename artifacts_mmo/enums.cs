@@ -6,9 +6,10 @@ namespace ArtifactsAPI
         NotFound = 404,
         ActionInProgress = 486,
         AtDestination = 490,
+        NotRequiredSkillLevel = 493,
         InventoryFull = 497,
         CharacterNotFound = 498,
         OnCooldown = 499,
-        MonsterNotFound = 598,
+        TargetNotFound = 598,
     }
 }

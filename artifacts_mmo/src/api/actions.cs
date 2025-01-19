@@ -2,7 +2,7 @@ using ArtifactsAPI.Models;
 
 namespace ArtifactsAPI
 {
-    partial class APIHandler
+    public partial class APIHandler
     {
         public class ActionEndpoints
         {
@@ -14,7 +14,7 @@ namespace ArtifactsAPI
                 _apiHandler = apiHandler;
             }
 
-            public async Task<MoveResponse> Move(int x, int y, bool wait_for_cooldown = false)
+            public async Task<MoveResponse> Move(int x, int y, bool wait_for_cooldown = true)
             {
                 var endpoint = $"{_path}/move";
                 var body = new { x, y };
@@ -34,7 +34,7 @@ namespace ArtifactsAPI
                 return move;
             }
 
-            public async Task<RestResponse> Rest(bool wait_for_cooldown = false)
+            public async Task<RestResponse> Rest(bool wait_for_cooldown = true)
             {
                 var endpoint = $"{_path}/rest";
 
@@ -53,7 +53,7 @@ namespace ArtifactsAPI
             // UnequipItem
             // UseItem
 
-            public async Task<FightResponse> Fight(bool wait_for_cooldown = false)
+            public async Task<FightResponse> Fight(bool wait_for_cooldown = true)
             {
                 var endpoint = $"{_path}/fight";
 
@@ -66,6 +66,21 @@ namespace ArtifactsAPI
                 }
 
                 return fight;
+            }
+
+            public async Task<GatherResponse> Gathering(bool wait_for_cooldown = true)
+            {
+                var endpoint = $"{_path}/gathering";
+
+                var response = await _apiHandler.handle_request(endpoint, HttpMethod.Post);
+
+                GatherResponse gather = new GatherResponse(response);
+                if (wait_for_cooldown)
+                {
+                    return gather.WaitForCooldown<GatherResponse>();
+                }
+
+                return gather;
             }
         }
     }
