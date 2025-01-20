@@ -47,7 +47,7 @@ namespace ArtifactsAPI.Models
             size = (int)json[nameof(size)]!;
             pages = (int)json[nameof(pages)]!;
 
-            data = [.. json[nameof(data)]!.Select(map => new Map(json[nameof(map)]!))];
+            data = [.. json[nameof(data)]!.Select(map => new Map(map))]!;
         }
     }
 }

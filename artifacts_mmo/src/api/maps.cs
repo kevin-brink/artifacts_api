@@ -1,5 +1,4 @@
-using System.Net.Mime;
-using System.Runtime.Serialization;
+using System.Formats.Tar;
 using ArtifactsAPI.Models;
 
 namespace ArtifactsAPI
@@ -11,7 +10,21 @@ namespace ArtifactsAPI
             private readonly APIHandler _apiHandler = apiHandler;
             private string _path => $"maps";
 
-            public async Task<MapResponse> GetAllMap(
+            public async Task<MapsResponse> GetAllMapsTotal()
+            {
+                int size = 100;
+                MapsResponse response = await GetAllMaps(size: size);
+
+                for (int page = response.page + 1; page <= response.pages; page++)
+                {
+                    MapsResponse next_response = await GetAllMaps(page: page, size: size);
+                    response.data.AddRange(next_response.data);
+                }
+
+                return response;
+            }
+
+            public async Task<MapsResponse> GetAllMaps(
                 string content_code = "",
                 ContentType content_type = ContentType.any,
                 int page = 1,
@@ -34,9 +47,13 @@ namespace ArtifactsAPI
                 if (size != 50)
                     query.Add("size", size.ToString());
 
-                var response = await _apiHandler.handle_request(endpoint, HttpMethod.Get);
+                var response = await _apiHandler.handle_request(
+                    endpoint,
+                    HttpMethod.Get,
+                    urlParams: query
+                );
 
-                return new MapResponse(response);
+                return new MapsResponse(response);
             }
 
             public async Task<MapResponse> GetMap(int x, int y)

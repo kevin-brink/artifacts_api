@@ -18,7 +18,9 @@ namespace ArtifactsAPI.Schemas
         public int x = (int)json["x"]!;
         public int y = (int)json["y"]!;
         public MapContent? content =
-            json["content"] != null ? new MapContent(json["content"]!) : null;
+            json["content"] is not null && json["content"]!.Any()
+                ? new MapContent(json["content"]!)
+                : null;
     }
 
     public class MapContent(JToken json)
