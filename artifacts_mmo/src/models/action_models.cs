@@ -19,9 +19,9 @@ namespace ArtifactsAPI.Models
             if (status_code != StatusCode.OK)
                 return;
 
-            cooldown = new Cooldown(json["cooldown"]!);
-            destination = new Map(json["destination"]!);
-            character = new Character(json["character"]!);
+            cooldown = new Cooldown(json[nameof(cooldown)]!);
+            destination = new Map(json[nameof(destination)]!);
+            character = new Character(json[nameof(character)]!);
         }
     }
 
@@ -41,9 +41,9 @@ namespace ArtifactsAPI.Models
             if (status_code != StatusCode.OK)
                 return;
 
-            cooldown = new Cooldown(json["cooldown"]!);
-            hp_restored = (int)json["hp_restored"]!;
-            character = new Character(json["character"]!);
+            cooldown = new Cooldown(json[nameof(cooldown)]!);
+            hp_restored = (int)json[nameof(hp_restored)]!;
+            character = new Character(json[nameof(character)]!);
         }
     }
 
@@ -63,9 +63,9 @@ namespace ArtifactsAPI.Models
             if (status_code != StatusCode.OK)
                 return;
 
-            cooldown = new Cooldown(json["cooldown"]!);
-            fight = new Fight(json["fight"]!);
-            character = new Character(json["character"]!);
+            cooldown = new Cooldown(json[nameof(cooldown)]!);
+            fight = new Fight(json[nameof(fight)]!);
+            character = new Character(json[nameof(character)]!);
         }
     }
 
@@ -85,9 +85,9 @@ namespace ArtifactsAPI.Models
             if (status_code != StatusCode.OK)
                 return;
 
-            cooldown = new Cooldown(json["cooldown"]!);
-            details = new SkillInfo(json["details"]!);
-            character = new Character(json["character"]!);
+            cooldown = new Cooldown(json[nameof(cooldown)]!);
+            details = new SkillInfo(json[nameof(details)]!);
+            character = new Character(json[nameof(character)]!);
         }
     }
 }
