@@ -12,4 +12,15 @@ namespace ArtifactsAPI
         OnCooldown = 499,
         TargetNotFound = 598,
     }
+
+    public enum ContentType
+    {
+        any,
+        monster,
+        resource,
+        workshop,
+        bank,
+        grand_exchange,
+        tasks_master,
+    }
 }
