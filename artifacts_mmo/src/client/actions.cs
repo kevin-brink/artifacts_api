@@ -12,6 +12,8 @@ namespace ArtifactsAPI.Client
 
         public async Task GrindCombat(int target_level, Character character)
         {
+            // TODO Actually calculate if a fight is winnable.
+            // I dont think theres actually much randomnes here, so this should be fairly straighforward
             var targets = await FindTargets(character);
             int target = 0;
 
