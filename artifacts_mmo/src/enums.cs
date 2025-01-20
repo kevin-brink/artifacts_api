@@ -23,4 +23,10 @@ namespace ArtifactsAPI
         grand_exchange,
         tasks_master,
     }
+
+    public enum FightResult
+    {
+        win,
+        loss,
+    }
 }

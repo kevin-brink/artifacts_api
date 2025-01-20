@@ -64,21 +64,17 @@ namespace ArtifactsAPI.Models
         public StatusCode status_code { get; private set; }
         public HttpResponseMessage response { get; private set; }
 
-        public List<Character>? characters { get; private set; }
+        public List<Character> data { get; private set; }
 
         public CharactersResponse(HttpResponseMessage response)
         {
             var content = response.Content.ReadAsStringAsync().Result;
-            var json = JArray.Parse(content);
+            var json = JObject.Parse(content)!;
 
             status_code = (StatusCode)response.StatusCode;
             this.response = response;
 
-            characters = new List<Character>();
-            foreach (var character in json["data"]!)
-            {
-                characters.Add(new Character(character));
-            }
+            data = [.. json[nameof(data)]!.Select(character => new Character(character))]!;
         }
     }
 }

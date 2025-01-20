@@ -1,4 +1,3 @@
-using System.Formats.Tar;
 using ArtifactsAPI.Models;
 
 namespace ArtifactsAPI
