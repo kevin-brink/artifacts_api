@@ -11,6 +11,7 @@ namespace ArtifactsAPI
         // TODO Should endpoints each be dict grabbed by character names?
         // ie api_hander.Actions["character_name"].Move(0, 1)
         public ActionEndpoints Actions => new ActionEndpoints(this);
+        public ItemsEndpoints Items => new ItemsEndpoints(this);
         public MapsEndpoints Maps => new MapsEndpoints(this);
         public MonstersEndpoints Monsters => new MonstersEndpoints(this);
         public OtherEndpoints Other => new OtherEndpoints(this);

@@ -4,15 +4,10 @@ namespace ArtifactsAPI
 {
     public partial class APIHandler
     {
-        public class ItemsEndpoints
+        public class ItemsEndpoints(APIHandler apiHandler)
         {
-            private readonly APIHandler _apiHandler;
+            private readonly APIHandler _apiHandler = apiHandler;
             private string _path => $"items";
-
-            public ItemsEndpoints(APIHandler apiHandler)
-            {
-                _apiHandler = apiHandler;
-            }
 
             public async Task<ItemsResponse> GetAllItemsTotal()
             {
