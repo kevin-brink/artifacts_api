@@ -54,8 +54,9 @@ namespace ArtifactsAPI
         utility2,
     }
 
-    public enum Skill
+    public enum CraftSkill
     {
+        any,
         weaponcrafting,
         gearcrafting,
         jewelrycrafting,
@@ -63,5 +64,23 @@ namespace ArtifactsAPI
         woodcutting,
         mining,
         alchemy,
+    }
+
+    public enum ItemType
+    {
+        any,
+        utility,
+        body_armor,
+        weapon,
+        resource,
+        leg_armor,
+        helmet,
+        boots,
+        shield,
+        amulet,
+        ring,
+        artifact,
+        currency,
+        consumable,
     }
 }

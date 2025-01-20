@@ -227,7 +227,7 @@ namespace ArtifactsAPI.Schemas
 
     public class Craft(JToken json)
     {
-        public Skill skill = Enum.Parse<Skill>(json["skill"]!.ToString());
+        public CraftSkill skill = Enum.Parse<CraftSkill>(json["skill"]!.ToString());
         public int level = (int)json["level"]!;
         public List<Drop> items = json["items"]!.Select(item => new Drop(item)).ToList();
         public int quantity = (int)json["quantity"]!;
