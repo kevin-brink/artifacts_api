@@ -31,9 +31,7 @@ namespace ArtifactsAPI.Models
             var currentTime = DateTime.UtcNow;
             var waitTime = cooldown.expiration - currentTime;
             if (waitTime.TotalSeconds > 0)
-            {
                 Task.Delay(waitTime).Wait();
-            }
         }
     }
 }

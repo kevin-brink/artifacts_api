@@ -27,7 +27,7 @@ namespace ArtifactsAPI.Models
         public StatusCode status_code { get; private set; }
         public HttpResponseMessage response { get; private set; }
 
-        public List<Log>? logs { get; private set; }
+        public List<Log> data { get; private set; } = [];
         public int? total { get; private set; }
         public int? page { get; private set; }
         public int? size { get; private set; }
@@ -36,7 +36,7 @@ namespace ArtifactsAPI.Models
         public LogResponse(HttpResponseMessage response)
         {
             var content = response.Content.ReadAsStringAsync().Result;
-            var json = JArray.Parse(content);
+            var json = JObject.Parse(content);
 
             status_code = (StatusCode)response.StatusCode;
             this.response = response;
@@ -46,16 +46,12 @@ namespace ArtifactsAPI.Models
                 return;
             }
 
-            logs = new List<Log>();
-            foreach (var log in json["data"]!)
-            {
-                logs.Add(new Log(log));
-            }
-
             total = (int)json["total"]!;
             page = (int)json["page"]!;
             size = (int)json["size"]!;
             pages = (int)json["pages"]!;
+
+            data = [.. json[nameof(data)]!.Select(log => new Log(log))]!;
         }
     }
 
@@ -64,21 +60,17 @@ namespace ArtifactsAPI.Models
         public StatusCode status_code { get; private set; }
         public HttpResponseMessage response { get; private set; }
 
-        public List<Character>? characters { get; private set; }
+        public List<Character> data { get; private set; }
 
         public CharactersResponse(HttpResponseMessage response)
         {
             var content = response.Content.ReadAsStringAsync().Result;
-            var json = JArray.Parse(content);
+            var json = JObject.Parse(content)!;
 
             status_code = (StatusCode)response.StatusCode;
             this.response = response;
 
-            characters = new List<Character>();
-            foreach (var character in json["data"]!)
-            {
-                characters.Add(new Character(character));
-            }
+            data = [.. json[nameof(data)]!.Select(character => new Character(character))]!;
         }
     }
 }

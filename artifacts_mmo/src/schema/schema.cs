@@ -18,7 +18,9 @@ namespace ArtifactsAPI.Schemas
         public int x = (int)json["x"]!;
         public int y = (int)json["y"]!;
         public MapContent? content =
-            json["content"] != null ? new MapContent(json["content"]!) : null;
+            json["content"] is not null && json["content"]!.Any()
+                ? new MapContent(json["content"]!)
+                : null;
     }
 
     public class MapContent(JToken json)
@@ -131,7 +133,7 @@ namespace ArtifactsAPI.Schemas
     public class Drop(JToken json)
     {
         public string code = (string)json["code"]!;
-        public int quantity = (int)json["quantity"]!;
+        public int quantity = (int)(json["quantity"] ?? json["min_quantity"])!;
     }
 
     public class BlockedHits(JToken json)
@@ -185,5 +187,24 @@ namespace ArtifactsAPI.Schemas
     {
         public string code = (string)json["code"]!;
         public int quantity = (int)json["quantity"]!;
+    }
+
+    public class Monster(JToken json)
+    {
+        public string name = (string)json["name"]!;
+        public string code = (string)json["code"]!;
+        public int level = (int)json["level"]!;
+        public int hp = (int)json["hp"]!;
+        public int attack_fire = (int)json["attack_fire"]!;
+        public int attack_earth = (int)json["attack_earth"]!;
+        public int attack_water = (int)json["attack_water"]!;
+        public int attack_air = (int)json["attack_air"]!;
+        public int res_fire = (int)json["res_fire"]!;
+        public int res_earth = (int)json["res_earth"]!;
+        public int res_water = (int)json["res_water"]!;
+        public int res_air = (int)json["res_air"]!;
+        public int min_gold = (int)json["min_gold"]!;
+        public int max_gold = (int)json["max_gold"]!;
+        public List<Drop> drops = [.. json["drops"]!.Select(item => new Drop(item))];
     }
 }
