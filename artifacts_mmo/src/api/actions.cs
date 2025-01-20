@@ -4,15 +4,10 @@ namespace ArtifactsAPI
 {
     public partial class APIHandler
     {
-        public class ActionEndpoints
+        public class ActionEndpoints(APIHandler apiHandler)
         {
-            private readonly APIHandler _apiHandler;
+            private readonly APIHandler _apiHandler = apiHandler;
             private string _path => $"my/{_apiHandler.character_name}/action";
-
-            public ActionEndpoints(APIHandler apiHandler)
-            {
-                _apiHandler = apiHandler;
-            }
 
             public async Task<MoveResponse> Move(int x, int y, bool wait_for_cooldown = true)
             {
