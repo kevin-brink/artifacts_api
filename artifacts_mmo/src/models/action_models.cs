@@ -69,12 +69,34 @@ namespace ArtifactsAPI.Models
         }
     }
 
-    public class GatherResponse : BaseResponse
+    public class GatheringResponse : BaseResponse
     {
         public SkillInfo? details { get; private set; }
         public Character? character { get; private set; }
 
-        public GatherResponse(HttpResponseMessage response)
+        public GatheringResponse(HttpResponseMessage response)
+        {
+            var content = response.Content.ReadAsStringAsync().Result;
+            var json = JObject.Parse(content)["data"]!;
+
+            status_code = (StatusCode)response.StatusCode;
+            this.response = response;
+
+            if (status_code != StatusCode.OK)
+                return;
+
+            cooldown = new Cooldown(json[nameof(cooldown)]!);
+            details = new SkillInfo(json[nameof(details)]!);
+            character = new Character(json[nameof(character)]!);
+        }
+    }
+
+    public class CraftingResponse : BaseResponse
+    {
+        public SkillInfo? details { get; private set; }
+        public Character? character { get; private set; }
+
+        public CraftingResponse(HttpResponseMessage response)
         {
             var content = response.Content.ReadAsStringAsync().Result;
             var json = JObject.Parse(content)["data"]!;
