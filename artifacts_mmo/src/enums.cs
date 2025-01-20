@@ -4,9 +4,15 @@ namespace ArtifactsAPI
     {
         OK = 200,
         NotFound = 404,
+        MissingItem = 478,
+        NotEnoughHP = 483,
+        TooManyUtilities = 484,
+        AlreadyEquipped = 485,
         ActionInProgress = 486,
         AtDestination = 490,
+        SlotEmpty = 491,
         NotRequiredSkillLevel = 493,
+        LevelTooLow = 496,
         InventoryFull = 497,
         CharacterNotFound = 498,
         OnCooldown = 499,
@@ -28,5 +34,34 @@ namespace ArtifactsAPI
     {
         win,
         loss,
+    }
+
+    public enum Slot
+    {
+        weapon,
+        shield,
+        helmet,
+        body_armor,
+        leg_armor,
+        boots,
+        ring1,
+        ring2,
+        amulet,
+        artifact1,
+        artifact2,
+        artifact3,
+        utility1,
+        utility2,
+    }
+
+    public enum Skill
+    {
+        weaponcrafting,
+        gearcrafting,
+        jewelrycrafting,
+        cooking,
+        woodcutting,
+        mining,
+        alchemy,
     }
 }

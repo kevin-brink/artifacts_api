@@ -180,13 +180,7 @@ namespace ArtifactsAPI.Schemas
     public class SkillInfo(JToken json)
     {
         public int xp = (int)json["xp"]!;
-        public List<Item> items = [.. json["items"]!.Select(item => new Item(item))];
-    }
-
-    public class Item(JToken json)
-    {
-        public string code = (string)json["code"]!;
-        public int quantity = (int)json["quantity"]!;
+        public List<Drop> items = [.. json["items"]!.Select(item => new Drop(item))];
     }
 
     public class Monster(JToken json)
@@ -206,5 +200,36 @@ namespace ArtifactsAPI.Schemas
         public int min_gold = (int)json["min_gold"]!;
         public int max_gold = (int)json["max_gold"]!;
         public List<Drop> drops = [.. json["drops"]!.Select(item => new Drop(item))];
+    }
+
+    public class Item(JToken json)
+    {
+        public string name = (string)json["name"]!;
+        public string code = (string)json["code"]!;
+        public int level = (int)json["level"]!;
+        public string type = (string)json["type"]!;
+        public string subtype = (string)json["subtype"]!;
+        public string description = (string)json["description"]!;
+        public List<ItemEffect> effects =
+        [
+            .. json["effects"]!.Select(effect => new ItemEffect(effect)),
+        ];
+        public Craft? craft =
+            json["craft"] is not null && json["craft"]!.Any() ? new Craft(json["craft"]!) : null;
+        public bool tradeable = (bool)json["tradeable"]!;
+    }
+
+    public class ItemEffect(JToken json)
+    {
+        public string name = (string)json["name"]!;
+        public int value = (int)json["value"]!;
+    }
+
+    public class Craft(JToken json)
+    {
+        public Skill skill = Enum.Parse<Skill>(json["skill"]!.ToString());
+        public int level = (int)json["level"]!;
+        public List<Drop> items = json["items"]!.Select(item => new Drop(item)).ToList();
+        public int quantity = (int)json["quantity"]!;
     }
 }

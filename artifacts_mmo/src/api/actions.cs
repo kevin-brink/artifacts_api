@@ -44,8 +44,73 @@ namespace ArtifactsAPI
                 return rest;
             }
 
-            // EquipItem
-            // UnequipItem
+            public async Task<EquipResponse> EquipItem(
+                string code,
+                Slot slot,
+                int quantity = 1,
+                bool wait_for_cooldown = true
+            )
+            {
+                var endpoint = $"{_path}/equip";
+
+                Dictionary<string, string> body = [];
+                body.Add("code", code);
+                body.Add("slot", slot.ToString());
+                if ((slot == Slot.utility1 || slot == Slot.utility2) && quantity != 1)
+                {
+                    ArgumentOutOfRangeException.ThrowIfLessThan(quantity, 1);
+                    ArgumentOutOfRangeException.ThrowIfGreaterThan(quantity, 100);
+
+                    body.Add("quantity", quantity.ToString());
+                }
+
+                var response = await _apiHandler.handle_request(
+                    endpoint,
+                    HttpMethod.Post,
+                    body: body
+                );
+
+                EquipResponse equip = new(response);
+                if (wait_for_cooldown)
+                {
+                    return equip.WaitForCooldown<EquipResponse>();
+                }
+
+                return equip;
+            }
+
+            public async Task<EquipResponse> UnequipItem(
+                Slot slot,
+                int quantity = 1,
+                bool wait_for_cooldown = true
+            )
+            {
+                var endpoint = $"{_path}/unequip";
+                Dictionary<string, string> body = [];
+                body.Add("slot", slot.ToString());
+                if ((slot == Slot.utility1 || slot == Slot.utility2) && quantity != 1)
+                {
+                    ArgumentOutOfRangeException.ThrowIfLessThan(quantity, 1);
+                    ArgumentOutOfRangeException.ThrowIfGreaterThan(quantity, 100);
+
+                    body.Add("quantity", quantity.ToString());
+                }
+
+                var response = await _apiHandler.handle_request(
+                    endpoint,
+                    HttpMethod.Post,
+                    body: body
+                );
+
+                EquipResponse unequip = new(response);
+                if (wait_for_cooldown)
+                {
+                    return unequip.WaitForCooldown<EquipResponse>();
+                }
+
+                return unequip;
+            }
+
             // UseItem
 
             public async Task<FightResponse> Fight(bool wait_for_cooldown = true)
