@@ -24,6 +24,30 @@ namespace ArtifactsAPI
                 return response;
             }
 
+            public async Task<
+                Dictionary<ContentType, Dictionary<string, List<Schemas.Map>>>
+            > GetAllMapsContents()
+            {
+                var maps = await GetAllMapsTotal();
+                var maps_with_content = maps.data.Where(x => x.content is not null).ToList();
+                var content = new Dictionary<ContentType, Dictionary<string, List<Schemas.Map>>>();
+                foreach (var map in maps_with_content)
+                {
+                    var content_type = Enum.TryParse<ContentType>(map.content!.type, out var type)
+                        ? type
+                        : ContentType.any;
+                    if (!content.ContainsKey(content_type))
+                        content[content_type] = [];
+
+                    if (!content[content_type].ContainsKey(map.content!.code))
+                        content[content_type][map.content!.code] = [];
+
+                    content[content_type][map.content!.code].Add(map);
+                }
+
+                return content;
+            }
+
             public async Task<MapsResponse> GetAllMaps(
                 string content_code = "",
                 ContentType content_type = ContentType.any,
