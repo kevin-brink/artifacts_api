@@ -4,14 +4,9 @@ namespace ArtifactsAPI
 {
     public partial class APIHandler
     {
-        public class OtherEndpoints
+        public class OtherEndpoints(APIHandler apiHandler)
         {
-            private readonly APIHandler _apiHandler;
-
-            public OtherEndpoints(APIHandler apiHandler)
-            {
-                _apiHandler = apiHandler;
-            }
+            private readonly APIHandler _apiHandler = apiHandler;
 
             public async Task<StatusResponse> GetStatus()
             {
@@ -26,15 +21,9 @@ namespace ArtifactsAPI
             {
                 var endpoint = "my/logs";
 
-                if (page < 1)
-                {
-                    throw new ArgumentException("Page must be greater than 0");
-                }
-
-                if (size < 1 || size > 100)
-                {
-                    throw new ArgumentException("Size must be between 1 and 100");
-                }
+                ArgumentOutOfRangeException.ThrowIfLessThan(page, 1);
+                ArgumentOutOfRangeException.ThrowIfLessThan(size, 1);
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(size, 100);
 
                 var response = await _apiHandler.handle_request(
                     endpoint,
