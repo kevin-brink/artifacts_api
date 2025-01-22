@@ -109,6 +109,21 @@ namespace ArtifactsAPI.Schemas
         [
             .. json["inventory"]!.Select(item => new Inventory(item)),
         ];
+
+        public int GetSkillLevel(CraftSkill skill)
+        {
+            return skill switch
+            {
+                CraftSkill.weaponcrafting => weaponcrafting_level,
+                CraftSkill.gearcrafting => gearcrafting_level,
+                CraftSkill.jewelrycrafting => jewelrycrafting_level,
+                CraftSkill.cooking => cooking_level,
+                CraftSkill.woodcutting => woodcutting_level,
+                CraftSkill.mining => mining_level,
+                CraftSkill.alchemy => alchemy_level,
+                _ => 0,
+            };
+        }
     }
 
     public class Inventory(JToken json)
@@ -230,6 +245,11 @@ namespace ArtifactsAPI.Schemas
         public CraftSkill skill = Enum.Parse<CraftSkill>(json["skill"]!.ToString());
         public int level = (int)json["level"]!;
         public List<Drop> items = json["items"]!.Select(item => new Drop(item)).ToList();
+        public int quantity = (int)json["quantity"]!;
+    }
+
+    public class Gold(JToken json)
+    {
         public int quantity = (int)json["quantity"]!;
     }
 }

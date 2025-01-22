@@ -136,4 +136,50 @@ namespace ArtifactsAPI.Models
             character = new Character(json[nameof(character)]!);
         }
     }
+
+    public class BankGoldTransactionResponse : BaseResponse
+    {
+        public Gold? bank { get; private set; }
+        public Character? character { get; private set; }
+
+        public BankGoldTransactionResponse(HttpResponseMessage response)
+        {
+            var content = response.Content.ReadAsStringAsync().Result;
+            var json = JObject.Parse(content)["data"]!;
+
+            status_code = (StatusCode)response.StatusCode;
+            this.response = response;
+
+            if (status_code != StatusCode.OK)
+                return;
+
+            cooldown = new Cooldown(json[nameof(cooldown)]!);
+            bank = new Gold(json[nameof(bank)]!);
+            character = new Character(json[nameof(character)]!);
+        }
+    }
+
+    public class BankItemTransactionResponse : BaseResponse
+    {
+        public Item? item { get; private set; }
+        public List<Drop>? bank { get; private set; }
+        public Character? character { get; private set; }
+
+        public BankItemTransactionResponse(HttpResponseMessage response)
+        {
+            var content = response.Content.ReadAsStringAsync().Result;
+            var json = JObject.Parse(content)["data"]!;
+
+            status_code = (StatusCode)response.StatusCode;
+            this.response = response;
+
+            if (status_code != StatusCode.OK)
+                return;
+
+            cooldown = new Cooldown(json[nameof(cooldown)]!);
+            item = new Item(json[nameof(item)]!);
+            bank = [.. json[nameof(bank)]!.Select(drop => new Drop(drop))];
+            character = new Character(json[nameof(character)]!);
+        }
+    }
 }

@@ -29,6 +29,11 @@ namespace ArtifactsAPI
                 return move;
             }
 
+            public async Task<MoveResponse> Move(Schemas.Map map, bool wait_for_cooldown = true)
+            {
+                return await Move(map.x, map.y, wait_for_cooldown);
+            }
+
             public async Task<RestResponse> Rest(bool wait_for_cooldown = true)
             {
                 var endpoint = $"{_path}/rest";
@@ -165,6 +170,108 @@ namespace ArtifactsAPI
                 }
 
                 return craft;
+            }
+
+            public async Task<BankGoldTransactionResponse> DepositBankGold(
+                int quantity,
+                bool wait_for_cooldown = true
+            )
+            {
+                ArgumentOutOfRangeException.ThrowIfLessThan(quantity, 1);
+
+                var endpoint = $"{_path}/bank/deposit/gold";
+                var body = new { quantity };
+
+                var response = await _apiHandler.handle_request(
+                    endpoint,
+                    HttpMethod.Post,
+                    body: body
+                );
+
+                BankGoldTransactionResponse depositGold = new(response);
+                if (wait_for_cooldown)
+                {
+                    return depositGold.WaitForCooldown<BankGoldTransactionResponse>();
+                }
+
+                return depositGold;
+            }
+
+            public async Task<BankItemTransactionResponse> DepositBank(
+                string code,
+                int quantity = 1,
+                bool wait_for_cooldown = true
+            )
+            {
+                ArgumentOutOfRangeException.ThrowIfLessThan(quantity, 1);
+
+                var endpoint = $"{_path}/bank/deposit";
+                var body = new { code, quantity };
+
+                var response = await _apiHandler.handle_request(
+                    endpoint,
+                    HttpMethod.Post,
+                    body: body
+                );
+
+                BankItemTransactionResponse deposit = new(response);
+                if (wait_for_cooldown)
+                {
+                    return deposit.WaitForCooldown<BankItemTransactionResponse>();
+                }
+
+                return deposit;
+            }
+
+            public async Task<BankItemTransactionResponse> WithdrawBank(
+                string code,
+                int quantity = 1,
+                bool wait_for_cooldown = true
+            )
+            {
+                ArgumentOutOfRangeException.ThrowIfLessThan(quantity, 1);
+
+                var endpoint = $"{_path}/bank/withdraw";
+                var body = new { code, quantity };
+
+                var response = await _apiHandler.handle_request(
+                    endpoint,
+                    HttpMethod.Post,
+                    body: body
+                );
+
+                BankItemTransactionResponse withdraw = new(response);
+                if (wait_for_cooldown)
+                {
+                    return withdraw.WaitForCooldown<BankItemTransactionResponse>();
+                }
+
+                return withdraw;
+            }
+
+            public async Task<BankGoldTransactionResponse> WithdrawBankGold(
+                int quantity,
+                bool wait_for_cooldown = true
+            )
+            {
+                ArgumentOutOfRangeException.ThrowIfLessThan(quantity, 1);
+
+                var endpoint = $"{_path}/bank/withdraw/gold";
+                var body = new { quantity };
+
+                var response = await _apiHandler.handle_request(
+                    endpoint,
+                    HttpMethod.Post,
+                    body: body
+                );
+
+                BankGoldTransactionResponse withdrawGold = new(response);
+                if (wait_for_cooldown)
+                {
+                    return withdrawGold.WaitForCooldown<BankGoldTransactionResponse>();
+                }
+
+                return withdrawGold;
             }
         }
     }

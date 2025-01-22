@@ -4,6 +4,8 @@ namespace ArtifactsAPI
     {
         OK = 200,
         NotFound = 404,
+        TransactionInProgress = 461,
+        BankFull = 462,
         MissingItem = 478,
         NotEnoughHP = 483,
         TooManyUtilities = 484,
@@ -11,12 +13,13 @@ namespace ArtifactsAPI
         ActionInProgress = 486,
         AtDestination = 490,
         SlotEmpty = 491,
+        InsufficientGold = 492,
         NotRequiredSkillLevel = 493,
         LevelTooLow = 496,
         InventoryFull = 497,
         CharacterNotFound = 498,
         OnCooldown = 499,
-        TargetNotFound = 598,
+        TargetNotOnMap = 598,
     }
 
     public enum ContentType
