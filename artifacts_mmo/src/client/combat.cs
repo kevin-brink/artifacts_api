@@ -14,11 +14,14 @@ namespace ArtifactsAPI.Client
                 // TODO Actually calculate if a fight is winnable.
                 // I dont think theres actually much randomness here, so this should be fairly straighforward
                 var targets = await FindTargets();
-                int target_index = 0;
+                int target_index = 2;
                 Map target = client.Utility.GetNearestMap(targets[target_index]);
 
                 bool has_leveled_since_loss = true;
                 int level_before_fight = character.level;
+
+                if (character.hp < character.max_hp)
+                    await client.api.Actions.Rest();
 
                 do
                 {
@@ -30,6 +33,12 @@ namespace ArtifactsAPI.Client
                     {
                         await client.Combat.EmptyInventoryInBank();
                         target = client.Utility.GetNearestMap(targets[target_index]);
+                        continue;
+                    }
+
+                    if (fight.status_code == StatusCode.OnCooldown)
+                    {
+                        Thread.Sleep(1000);
                         continue;
                     }
 
@@ -57,6 +66,8 @@ namespace ArtifactsAPI.Client
                     var rest = await client.api.Actions.Rest();
                     character = rest.character!;
                 } while (character.level < target_level);
+
+                await client.api.Actions.Rest();
             }
 
             private async Task<List<List<Map>>> FindTargets()
