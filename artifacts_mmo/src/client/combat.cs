@@ -12,28 +12,31 @@ namespace ArtifactsAPI.Client
             public async Task GrindCombat(int target_level, Character character)
             {
                 // TODO Actually calculate if a fight is winnable.
-                // I dont think theres actually much randomnes here, so this should be fairly straighforward
+                // I dont think theres actually much randomness here, so this should be fairly straighforward
                 var targets = await FindTargets();
-                int target = 0;
+                int target_index = 0;
+                Map target = client.Utility.GetNearestMap(targets[target_index]);
 
                 bool has_leveled_since_loss = true;
                 int level_before_fight = character.level;
 
                 do
                 {
-                    await client.api.Actions.Move(targets[target].x, targets[target].y);
+                    await client.api.Actions.Move(target);
 
                     var fight = await client.api.Actions.Fight();
 
                     if (fight.status_code == StatusCode.InventoryFull)
                     {
                         await client.Combat.EmptyInventoryInBank();
+                        target = client.Utility.GetNearestMap(targets[target_index]);
                         continue;
                     }
 
                     if (Enum.Parse<FightResult>(fight.fight!.result) == FightResult.loss)
                     {
-                        target--;
+                        target_index--;
+                        target = client.Utility.GetNearestMap(targets[target_index]);
                         has_leveled_since_loss = false;
                     }
 
@@ -45,7 +48,10 @@ namespace ArtifactsAPI.Client
                     }
 
                     if (has_leveled_since_loss)
-                        target++;
+                    {
+                        target_index++;
+                        target = client.Utility.GetNearestMap(targets[target_index]);
+                    }
 
                     fight.WaitForCooldown<FightResponse>();
                     var rest = await client.api.Actions.Rest();
@@ -53,7 +59,7 @@ namespace ArtifactsAPI.Client
                 } while (character.level < target_level);
             }
 
-            private async Task<List<Map>> FindTargets()
+            private async Task<List<List<Map>>> FindTargets()
             {
                 var monsters = (await client.api.Maps.GetAllMapsContents())[ContentType.monster];
                 List<Monster> monster_data = [];
@@ -64,11 +70,10 @@ namespace ArtifactsAPI.Client
                 }
 
                 monster_data = [.. monster_data.OrderBy(m => m.level)];
-                List<Map> target_list = [];
+                List<List<Map>> target_list = [];
                 foreach (var monster in monster_data)
                 {
-                    var monster_of_type = monsters.Where(m => m.Key == monster.code).First().Value;
-                    target_list.Add(client.Utility.GetNearestMap(monster_of_type)!);
+                    target_list.Add(monsters.Where(m => m.Key == monster.code).First().Value);
                 }
 
                 return target_list;
@@ -76,7 +81,6 @@ namespace ArtifactsAPI.Client
 
             public async Task EmptyInventoryInBank()
             {
-                var curr_map = await client.api.Maps.GetMap(client.character.x, client.character.y);
                 var maps = await client.api.Maps.GetAllMaps(content_type: ContentType.bank);
                 var nearest_bank = client.Utility.GetNearestMap(maps.data);
                 if (nearest_bank is null)
@@ -99,8 +103,6 @@ namespace ArtifactsAPI.Client
 
                     await client.api.Actions.DepositBank(inventory.code, inventory.quantity);
                 }
-
-                await client.api.Actions.Move(curr_map.data!);
             }
         }
     }
