@@ -87,6 +87,14 @@ namespace ArtifactsAPI
         consumable,
     }
 
+    public enum Element
+    {
+        fire,
+        water,
+        earth,
+        air,
+    }
+
     public class Convert
     {
         public static ItemType SlotToItemType(Slot slot)

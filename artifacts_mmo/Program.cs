@@ -3,8 +3,7 @@ using ArtifactsAPI.Client;
 using ArtifactsAPI.Models;
 using ArtifactsAPI.Schemas;
 
-// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+// https://www.artifactsmmo.com/client
 
 string name = "Auranus";
 string api_key =
@@ -13,14 +12,25 @@ APIHandler api = new(api_key, name);
 var characters = await api.Other.GetCharacters();
 var character = characters.data.Where(c => c.name == name).First();
 
+Console.WriteLine($"Welcome, {character.name}!");
+Console.WriteLine($"Currently level {character.level}.\n");
+
 var client = new Client(api, character);
 
 // await client.Combat.GrindCombat(40);
 
-var highest_items = await client.Crafting.GetHighestLevelItems();
 
 var all_items = (await api.Items.GetAllItemsTotal()).data;
-foreach (var slot in Enum.GetValues<Slot>().Cast<Slot>())
+var highest_items = await client.Crafting.GetBestItems(all_items);
+List<Slot> skip_for_now =
+[
+    Slot.artifact1,
+    Slot.artifact2,
+    Slot.artifact3,
+    Slot.utility1,
+    Slot.utility2,
+];
+foreach (var slot in Enum.GetValues<Slot>().Except(skip_for_now))
 {
     var type = ArtifactsAPI.Convert.SlotToItemType(slot);
 
@@ -31,12 +41,16 @@ foreach (var slot in Enum.GetValues<Slot>().Cast<Slot>())
     if (item is null)
         continue;
 
+    bool currently_equipped = equipped_item is not null;
     if (equipped_item is not null && equipped_item.level >= item!.level)
         continue;
-    else
-        await client.api.Actions.UnequipItem(slot);
 
-    await client.Crafting.AcquireItem(item);
+    if (!await client.Crafting.AcquireItem(item))
+        continue;
+
+    if (currently_equipped)
+        await client.api.Actions.UnequipItem(slot);
+    await client.api.Actions.EquipItem(item.code, slot);
 }
 
 return 0;

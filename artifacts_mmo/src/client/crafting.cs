@@ -7,7 +7,6 @@ namespace ArtifactsAPI.Client
         public class CraftingClient(Client client)
         {
             private readonly Client client = client;
-            private List<Item> items = [];
 
             public static Dictionary<ItemType, List<Item>> Organizeitems(List<Item> items)
             {
@@ -31,7 +30,7 @@ namespace ArtifactsAPI.Client
                 return organized_items;
             }
 
-            public async Task<bool> AcquireItem(Item? item_to_get)
+            public async Task<bool> AcquireItem(Item? item_to_get, List<Item>? items = null)
             {
                 if (item_to_get is null)
                     return false;
@@ -39,7 +38,7 @@ namespace ArtifactsAPI.Client
                 // TODO Go through tree and get initial count of items
                 // Then visit bank and remove everything not on list
                 // and grab everything that is.
-                if (items.Count == 0)
+                if (items == null || items.Count == 0)
                     items = (await client.api.Items.GetAllItemsTotal()).data!;
 
                 if (item_to_get.craft is not null)
@@ -95,28 +94,44 @@ namespace ArtifactsAPI.Client
                 var more_maps = await client.api.Maps.GetAllMapsTotal();
             }
 
-            public async Task<Dictionary<ItemType, Item?>> GetHighestLevelItems()
+            public async Task<Dictionary<ItemType, Item?>> GetBestItems(
+                List<Item>? search_items = null
+            )
             {
-                var all_items = (await client.api.Items.GetAllItemsTotal()).data ?? [];
-                var organized_items = Organizeitems(all_items);
+                if (search_items is null || search_items.Count == 0)
+                    search_items = (await client.api.Items.GetAllItemsTotal()).data ?? [];
+                var organized_items = Organizeitems(search_items);
 
-                var highest_items = new Dictionary<ItemType, Item?>();
+                var best_items = new Dictionary<ItemType, Item?>();
                 foreach (ItemType type in organized_items.Keys)
                 {
-                    var highest_item = organized_items[type]
-                        .Where(i => i.level <= client.character.level)
-                        .OrderBy(i => i.level)
-                        .LastOrDefault();
+                    Item? best_item;
+                    if (type == ItemType.weapon)
+                    {
+                        List<string> ignore_subtypes = ["bow"];
+                        best_item = organized_items[type]
+                            .Where(i => i.level <= client.character.level)
+                            .Where(i => !ignore_subtypes.Contains(i.subtype))
+                            .OrderBy(i => CombatClient.CalculateDamage(i).Sum(i => i.Value))
+                            .LastOrDefault();
+                    }
+                    else
+                    {
+                        best_item = organized_items[type]
+                            .Where(i => i.level <= client.character.level)
+                            .OrderBy(i => i.level)
+                            .LastOrDefault();
+                    }
 
-                    highest_items.Add(type, highest_item);
+                    best_items.Add(type, best_item);
                 }
 
-                return highest_items;
+                return best_items;
             }
         }
     }
 
-    interface ICraftable
+    interface IForCrafts
     {
         public Item item { get; set; }
         public int quantity { get; set; }
@@ -124,13 +139,13 @@ namespace ArtifactsAPI.Client
         public bool AcquireItem();
     }
 
-    class CraftItem : ICraftable
+    class CraftItem : IForCrafts
     {
         public Item item { get; set; }
         public int quantity { get; set; }
         public CraftSkill skill { get; set; }
         public int level { get; set; }
-        public List<ICraftable> items { get; set; } = [];
+        public List<IForCrafts> items { get; set; } = [];
 
         public bool AcquireItem()
         {
@@ -138,7 +153,7 @@ namespace ArtifactsAPI.Client
         }
     }
 
-    class ResourceItem : ICraftable
+    class ResourceItem : IForCrafts
     {
         public Item item { get; set; }
         public int quantity { get; set; }

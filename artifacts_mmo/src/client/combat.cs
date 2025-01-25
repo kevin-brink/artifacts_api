@@ -71,7 +71,7 @@ namespace ArtifactsAPI.Client
                 await client.api.Actions.Rest();
             }
 
-            public async Task GrindTasks()
+            public async Task GrindMonsterTasks()
             {
                 return; // TODO
             }
@@ -120,6 +120,44 @@ namespace ArtifactsAPI.Client
 
                     await client.api.Actions.DepositBank(inventory.code, inventory.quantity);
                 }
+            }
+
+            public static Dictionary<Element, double> CalculateDamage(Item item)
+            {
+                var total_damage = Enum.GetValues<Element>()
+                    .Cast<Element>()
+                    .ToDictionary(element => element, element => 0.0);
+
+                if (item.effects is null)
+                    return total_damage;
+
+                var all_attacks = Enum.GetValues<Element>()
+                    .Cast<Element>()
+                    .ToDictionary(element => element, element => 0.0);
+                var all_damages = Enum.GetValues<Element>()
+                    .Cast<Element>()
+                    .ToDictionary(element => element, element => 0.0);
+
+                foreach (var effect in item.effects)
+                {
+                    if (effect.name.StartsWith("attack_"))
+                    {
+                        var type = Enum.Parse<Element>(effect.name[7..]);
+                        all_attacks[type] += effect.value;
+                    }
+                    if (effect.name.StartsWith("damage_"))
+                    {
+                        var type = Enum.Parse<Element>(effect.name[7..]);
+                        all_damages[type] += effect.value;
+                    }
+                }
+
+                foreach (var e in Enum.GetValues<Element>())
+                {
+                    total_damage[e] = all_attacks[e] + (all_damages[e] * 0.01);
+                }
+
+                return total_damage;
             }
         }
     }
