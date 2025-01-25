@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using ArtifactsAPI.Models;
 
 namespace ArtifactsAPI
 {
@@ -57,6 +58,12 @@ namespace ArtifactsAPI
             }
 
             return await _client.SendAsync(request);
+        }
+
+        public async Task<StatusResponse> GetStatus()
+        {
+            var response = await handle_request("", HttpMethod.Get);
+            return new StatusResponse(response);
         }
     }
 }

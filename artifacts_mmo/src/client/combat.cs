@@ -9,18 +9,18 @@ namespace ArtifactsAPI.Client
         {
             private readonly Client client = client;
 
-            public async Task GrindCombat(int target_level, Character character)
+            public async Task GrindCombat(int target_level)
             {
                 // TODO Actually calculate if a fight is winnable.
                 // I dont think theres actually much randomness here, so this should be fairly straighforward
-                var targets = await FindTargets();
+                var targets = await FindAllTargets();
                 int target_index = 2;
                 Map target = client.Utility.GetNearestMap(targets[target_index]);
 
                 bool has_leveled_since_loss = true;
-                int level_before_fight = character.level;
+                int level_before_fight = client.character.level;
 
-                if (character.hp < character.max_hp)
+                if (client.character.hp < client.character.max_hp)
                     await client.api.Actions.Rest();
 
                 do
@@ -33,13 +33,14 @@ namespace ArtifactsAPI.Client
                     {
                         await client.Combat.EmptyInventoryInBank();
                         target = client.Utility.GetNearestMap(targets[target_index]);
-                        continue;
+                        await client.api.Actions.Move(target);
+                        fight = await client.api.Actions.Fight();
                     }
 
-                    if (fight.status_code == StatusCode.OnCooldown)
+                    while (fight.status_code == StatusCode.OnCooldown)
                     {
                         Thread.Sleep(1000);
-                        continue;
+                        fight = await client.api.Actions.Fight();
                     }
 
                     if (Enum.Parse<FightResult>(fight.fight!.result) == FightResult.loss)
@@ -49,11 +50,11 @@ namespace ArtifactsAPI.Client
                         has_leveled_since_loss = false;
                     }
 
-                    character = fight.character!;
-                    if (character.level > level_before_fight)
+                    client.character = fight.character!;
+                    if (client.character.level > level_before_fight)
                     {
                         has_leveled_since_loss = true;
-                        level_before_fight = character.level;
+                        level_before_fight = client.character.level;
                     }
 
                     if (has_leveled_since_loss)
@@ -64,13 +65,18 @@ namespace ArtifactsAPI.Client
 
                     fight.WaitForCooldown<FightResponse>();
                     var rest = await client.api.Actions.Rest();
-                    character = rest.character!;
-                } while (character.level < target_level);
+                    client.character = rest.character!;
+                } while (client.character.level < target_level);
 
                 await client.api.Actions.Rest();
             }
 
-            private async Task<List<List<Map>>> FindTargets()
+            public async Task GrindTasks()
+            {
+                return; // TODO
+            }
+
+            private async Task<List<List<Map>>> FindAllTargets()
             {
                 var monsters = (await client.api.Maps.GetAllMapsContents())[ContentType.monster];
                 List<Monster> monster_data = [];

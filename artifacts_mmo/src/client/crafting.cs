@@ -14,14 +14,10 @@ namespace ArtifactsAPI.Client
                 var organized_items = new Dictionary<ItemType, List<Item>>();
                 foreach (var item in items)
                 {
-                    ItemType type = Enum.TryParse<ItemType>(item.type, out var item_type)
-                        ? item_type
-                        : ItemType.any;
+                    if (!organized_items.ContainsKey(item.type))
+                        organized_items[item.type] = [];
 
-                    if (!organized_items.ContainsKey(type))
-                        organized_items[type] = [];
-
-                    organized_items[type].Add(item);
+                    organized_items[item.type].Add(item);
                 }
 
                 foreach (var item_type in organized_items.Keys)
@@ -35,8 +31,11 @@ namespace ArtifactsAPI.Client
                 return organized_items;
             }
 
-            public async Task<bool> AcquireItem(Item item_to_get)
+            public async Task<bool> AcquireItem(Item? item_to_get)
             {
+                if (item_to_get is null)
+                    return false;
+
                 // TODO Go through tree and get initial count of items
                 // Then visit bank and remove everything not on list
                 // and grab everything that is.
@@ -66,7 +65,7 @@ namespace ArtifactsAPI.Client
                                 break;
 
                             Item next_item = items.Where(i => i.code == craft_item.code).First();
-                            switch (Enum.Parse<ItemType>(next_item.type))
+                            switch (next_item.type)
                             {
                                 case ItemType.resource:
                                     await get_resource(next_item, craft_item.quantity);
@@ -93,13 +92,62 @@ namespace ArtifactsAPI.Client
                         Sort maps by distance to player
                     Get {needed} of the resource
                 */
-                var maps = await client.api.Maps.GetAllMaps(
-                    content_type: ContentType.resource,
-                    size: 100
-                );
-
                 var more_maps = await client.api.Maps.GetAllMapsTotal();
             }
+
+            public async Task<Dictionary<ItemType, Item?>> GetHighestLevelItems()
+            {
+                var all_items = (await client.api.Items.GetAllItemsTotal()).data ?? [];
+                var organized_items = Organizeitems(all_items);
+
+                var highest_items = new Dictionary<ItemType, Item?>();
+                foreach (ItemType type in organized_items.Keys)
+                {
+                    var highest_item = organized_items[type]
+                        .Where(i => i.level <= client.character.level)
+                        .OrderBy(i => i.level)
+                        .LastOrDefault();
+
+                    highest_items.Add(type, highest_item);
+                }
+
+                return highest_items;
+            }
+        }
+    }
+
+    interface ICraftable
+    {
+        public Item item { get; set; }
+        public int quantity { get; set; }
+
+        public bool AcquireItem();
+    }
+
+    class CraftItem : ICraftable
+    {
+        public Item item { get; set; }
+        public int quantity { get; set; }
+        public CraftSkill skill { get; set; }
+        public int level { get; set; }
+        public List<ICraftable> items { get; set; } = [];
+
+        public bool AcquireItem()
+        {
+            return true;
+        }
+    }
+
+    class ResourceItem : ICraftable
+    {
+        public Item item { get; set; }
+        public int quantity { get; set; }
+        public string skill { get; set; }
+        public int level { get; set; }
+
+        public bool AcquireItem()
+        {
+            return true;
         }
     }
 }

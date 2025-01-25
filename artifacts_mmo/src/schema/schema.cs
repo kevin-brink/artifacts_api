@@ -124,6 +124,28 @@ namespace ArtifactsAPI.Schemas
                 _ => 0,
             };
         }
+
+        public string GetEquipmentSlot(Slot slot)
+        {
+            return slot switch
+            {
+                Slot.weapon => weapon_slot,
+                Slot.shield => shield_slot,
+                Slot.helmet => helmet_slot,
+                Slot.body_armor => body_armor_slot,
+                Slot.leg_armor => leg_armor_slot,
+                Slot.boots => boots_slot,
+                Slot.ring1 => ring1_slot,
+                Slot.ring2 => ring2_slot,
+                Slot.amulet => amulet_slot,
+                Slot.artifact1 => artifact1_slot,
+                Slot.artifact2 => artifact2_slot,
+                Slot.artifact3 => artifact3_slot,
+                Slot.utility1 => utility1_slot,
+                Slot.utility2 => utility2_slot,
+                _ => throw new ArgumentOutOfRangeException(nameof(slot), slot, null),
+            };
+        }
     }
 
     public class Inventory(JToken json)
@@ -222,7 +244,7 @@ namespace ArtifactsAPI.Schemas
         public string name = (string)json["name"]!;
         public string code = (string)json["code"]!;
         public int level = (int)json["level"]!;
-        public string type = (string)json["type"]!;
+        public ItemType type = Enum.Parse<ItemType>(json["type"]!.ToString());
         public string subtype = (string)json["subtype"]!;
         public string description = (string)json["description"]!;
         public List<ItemEffect> effects =

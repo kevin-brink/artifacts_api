@@ -15,12 +15,28 @@ var character = characters.data.Where(c => c.name == name).First();
 
 var client = new Client(api, character);
 
-await client.Combat.GrindCombat(40, character);
+// await client.Combat.GrindCombat(40);
 
-int item_number = 0;
-var items = await api.Items.GetAllItemsTotal();
-await client.Crafting.AcquireItem(items.data[item_number]);
+var highest_items = await client.Crafting.GetHighestLevelItems();
 
-var organized_items = Client.CraftingClient.Organizeitems(items.data);
+var all_items = (await api.Items.GetAllItemsTotal()).data;
+foreach (var slot in Enum.GetValues<Slot>().Cast<Slot>())
+{
+    var type = ArtifactsAPI.Convert.SlotToItemType(slot);
+
+    var equipped = client.character.GetEquipmentSlot(slot);
+    var equipped_item = all_items.FirstOrDefault(x => x.code == equipped);
+
+    var item = highest_items[type];
+    if (item is null)
+        continue;
+
+    if (equipped_item is not null && equipped_item.level >= item!.level)
+        continue;
+    else
+        await client.api.Actions.UnequipItem(slot);
+
+    await client.Crafting.AcquireItem(item);
+}
 
 return 0;

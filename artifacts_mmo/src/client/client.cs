@@ -10,13 +10,19 @@ namespace ArtifactsAPI.Client
         public CraftingClient Crafting => new(this);
         public UtilityClient Utility => new(this);
 
-        public readonly APIHandler api;
+        public APIHandler api;
         public Character character;
+
+        private Status status;
 
         public Client(APIHandler api_handler, Character character)
         {
             this.api = api_handler;
             this.character = character;
+
+            var response = api_handler.GetStatus();
+            var result = response.GetAwaiter().GetResult();
+            status = result.status;
         }
     }
 }

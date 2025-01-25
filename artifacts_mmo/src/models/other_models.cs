@@ -13,7 +13,7 @@ namespace ArtifactsAPI.Models
         public StatusResponse(HttpResponseMessage response)
         {
             var content = response.Content.ReadAsStringAsync().Result;
-            var json = JObject.Parse(content);
+            var json = JObject.Parse(content)["data"]!;
 
             status_code = (StatusCode)response.StatusCode;
             this.response = response;
